@@ -1,8 +1,56 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:wifi_scan/wifi_scan.dart';
+import 'package:flutter_background_service/flutter_background_service.dart';
+import 'package:flutter_background_service_android/flutter_background_service_android.dart';
 
-void main() {
+Future<void> initializeService() async {
+  final service = FlutterBackgroundService();
+
+
+  await service.configure(
+    androidConfiguration: AndroidConfiguration(
+      onStart: onStart,
+      autoStart: true,
+      isForegroundMode: true,
+
+    ),
+    iosConfiguration: IosConfiguration(
+      autoStart: true,
+      onForeground: onStart,
+      onBackground: onIosBackground,
+    ),
+  );
+
+  service.startService();
+}
+
+void onStart(ServiceInstance service) async {
+  if (service is AndroidServiceInstance) {
+    service.setAsForegroundService();
+
+  }
+
+  Timer.periodic(const Duration(seconds: 10), (timer) async {
+    final canScan = await WiFiScan.instance.canStartScan();
+    if (canScan == CanStartScan.yes) {
+      await WiFiScan.instance.startScan();
+      final results = await WiFiScan.instance.getScannedResults();
+      print("WiFi Networks Found: ${results.map((e) => e.ssid).toList()}");
+    }
+  });
+}
+
+bool onIosBackground(ServiceInstance service) {
+  return true;
+}
+
+
+
+Future<void> main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await initializeService();
   runApp(const MyApp());
 }
 
@@ -15,23 +63,32 @@ class MyApp extends StatefulWidget {
 
 class _MyAppState extends State<MyApp> {
   List<WiFiAccessPoint> _wifiList=[];
+  Timer? _timer;
 
   @override
   void initState() {
     super.initState();
     _requestPermissions();
+    _startAutoScan();
   }
   
   Future<void> _requestPermissions() async{
     PermissionStatus status=await Permission.location.request();
+    PermissionStatus backgroundStatus = await Permission.locationAlways.request();
 
-    if (status.isGranted) {
+    if (status.isGranted && backgroundStatus.isGranted) {
       print('Location permission granted');
-    } else if (status.isDenied) {
+    } else if (status.isDenied || backgroundStatus.isDenied) {
       print('Location permission denied');
-    } else if (status.isPermanentlyDenied) {
+    } else if (status.isPermanentlyDenied || backgroundStatus.isPermanentlyDenied) {
       print('Location permission permanently denied');
     }
+  }
+
+  void _startAutoScan(){
+    _timer=Timer.periodic(const Duration(seconds: 5), (timer){
+      _scanWiFi();
+    });
   }
 
   Future<void> _scanWiFi() async{
@@ -58,9 +115,9 @@ class _MyAppState extends State<MyApp> {
         ),
         body: Column(
           children: [
-            ElevatedButton(
-                onPressed: _scanWiFi,
-                child: const Text('مسح الشبكات القريبة')
+            const Text(
+              "The list of networks is updated automatically every 5 seconds",
+              style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
             ),
             Expanded(
                 child: ListView.builder(

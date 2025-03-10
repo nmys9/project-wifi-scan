@@ -6,10 +6,10 @@
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"/>
     <uses-permission android:name="android.permission.ACCESS_BACKGROUND_LOCATION"/>
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE"/>
 
     <uses-feature android:name="android.hardware.wifi" />
     <uses-feature android:name="android.hardware.location" />
-
 
     <application
         android:label="project_wifi_scan"
@@ -45,6 +45,15 @@
         <meta-data
             android:name="flutterEmbedding"
             android:value="2" />
+
+
+        <service
+            android:name="id.flutter.flutter_background_service.BackgroundService"
+            android:permission="android.permission.FOREGROUND_SERVICE"
+            android:enabled="true"
+            android:exported="true"
+            android:foregroundServiceType="location">
+        </service>
 
     </application>
     <!-- Required to query activities that can process text, see:

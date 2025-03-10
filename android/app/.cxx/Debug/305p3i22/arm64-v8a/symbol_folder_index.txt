@@ -1,0 +1,1 @@
+C:\Users\2024\StudioProjects\project_wifi_scan\build\app\intermediates\cxx\Debug\305p3i22\obj\arm64-v8a
