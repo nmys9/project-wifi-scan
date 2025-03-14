@@ -1,9 +1,11 @@
 import 'dart:async';
+import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:wifi_scan/wifi_scan.dart';
 import 'package:flutter_background_service/flutter_background_service.dart';
 import 'package:flutter_background_service_android/flutter_background_service_android.dart';
+import 'package:http/http.dart' as http;
 
 Future<void> initializeService() async {
   final service = FlutterBackgroundService();
@@ -48,6 +50,7 @@ bool onIosBackground(ServiceInstance service) {
 
 
 
+
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await initializeService();
@@ -64,6 +67,7 @@ class MyApp extends StatefulWidget {
 class _MyAppState extends State<MyApp> {
   List<WiFiAccessPoint> _wifiList=[];
   Timer? _timer;
+  String? _location='';
 
   @override
   void initState() {
@@ -91,6 +95,23 @@ class _MyAppState extends State<MyApp> {
     });
   }
 
+  Future<void> sendWifiDataToServer(List<Map<String,dynamic>> wifiData)async{
+    final url=Uri.parse('uri');
+    final response=await http.post(
+      url,
+      headers: {"Content-Type":"application/json"},
+      body: jsonEncode(wifiData),
+    );
+
+    if(response.statusCode == 200){
+      return jsonDecode(response.body)['estimated_location'];
+    }else{
+      print("خطأ في تحديد الموقع: ${response.body}");
+      return null;
+    }
+
+  }
+
   Future<void> _scanWiFi() async{
     final canScan=await WiFiScan.instance.canStartScan();
     if(canScan==CanStartScan.yes){
@@ -98,8 +119,21 @@ class _MyAppState extends State<MyApp> {
       await Future.delayed(const Duration(seconds: 2));
 
       final results=await WiFiScan.instance.getScannedResults();
+
+      List<Map<String,dynamic>> wifiData=results.map((wifi){
+        return{
+          'ssid':wifi.ssid,
+          'bssid':wifi.bssid,
+          'rssi':wifi.level,
+        };
+      }).toList();
+
+
+      String? location = await sendWifiDataToServer(wifiData);
+
+
       setState(() {
-        _wifiList=results;
+        _location=location ??  "لم يتم تحديد الموقع";
       });
     }else{
       print("لا يمكن بدء المسح. تحقق من الأذونات أو الإعدادات.");
@@ -113,25 +147,18 @@ class _MyAppState extends State<MyApp> {
         appBar: AppBar(
           title: const Text('WiFi Scanner'),
         ),
-        body: Column(
-          children: [
-            const Text(
-              "The list of networks is updated automatically every 5 seconds",
-              style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+        body: Container(
+          child: Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Text(
+              _location!,
+              style: const TextStyle(
+                fontSize: 32,
+              ),
+
             ),
-            Expanded(
-                child: ListView.builder(
-                  itemCount: _wifiList.length,
-                  itemBuilder: (context,index){
-                    final wifi=_wifiList[index];
-                    return ListTile(
-                      title: Text("SSID : ${wifi.ssid}"),
-                      subtitle: Text("RSSI : ${wifi.level} dBm"),
-                    );
-                  },
-                ),
-            ),
-          ],
+          ),
+
         ),
       ),
 
