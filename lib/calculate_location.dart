@@ -1,15 +1,18 @@
-Map<String,double> calculateLocation(List<Map<String,dynamic>> wifiFingerprintData,List<Map<String,dynamic>> wifiList){
+import 'package:cloud_firestore/cloud_firestore.dart';
+
+Map<String,double> calculateLocation(List<Map<String,dynamic>> wifiList,List<QueryDocumentSnapshot > data){
   Map<String,double> locationScores={};
 
   for(var wifi in wifiList){
-    for(var wifiFingerprint in wifiFingerprintData ){
-      if(wifi['bssid']==wifiFingerprint['bssid']){
-        double rssiAvg=(wifiFingerprint['rssi_max']+wifiFingerprint['rssi_min'])/2;
+    for(var doc in data ){
+      Map<String,dynamic> docData=doc.data() as Map<String,dynamic>;
+      if(wifi['bssid']==docData['bssid']){
+        double rssiAvg=(docData['rssi_max']+docData['rssi_min'])/2;
         double rssiDiff=(wifi['rssi']-rssiAvg).abs();
 
         double weight=1/(rssiDiff+1);
 
-        String locationName=wifiFingerprint['location_name'];
+        String locationName=doc['location_name'];
         locationScores[locationName]=(locationScores[locationName] ?? 0)+weight;
       }
     }

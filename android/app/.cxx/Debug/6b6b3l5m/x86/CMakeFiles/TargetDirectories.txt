@@ -1,0 +1,2 @@
+C:/Users/2024/StudioProjects/project_wifi_scan/android/app/.cxx/Debug/6b6b3l5m/x86/CMakeFiles/edit_cache.dir
+C:/Users/2024/StudioProjects/project_wifi_scan/android/app/.cxx/Debug/6b6b3l5m/x86/CMakeFiles/rebuild_cache.dir

@@ -1,11 +1,11 @@
 import 'dart:async';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_background_service/flutter_background_service.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:project_wifi_scan/calculate_location.dart';
-import 'package:project_wifi_scan/wifi_fingerprint_api.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:wifi_scan/wifi_scan.dart';
 
@@ -60,18 +60,25 @@ class _ScanWiFiState extends State<ScanWiFi> {
   Timer? _timer;
   List<Map<String,dynamic>> wifiList=[];
 
-  late Dio dio;
-  late WiFiFingerprintApi api;
 
-  List<Map<String, dynamic>> wifiFingerprintData=[];
 
   Map<String,dynamic> bestLocation={};
+
+  List<QueryDocumentSnapshot> data=[];
+
+  getData() async{
+    QuerySnapshot querySnapshot=
+    await FirebaseFirestore.instance.collection('wifiFingerprint').get();
+    data.addAll(querySnapshot.docs);
+    setState(() {
+
+    });
+  }
 
   @override
   void initState() {
     super.initState();
-    dio=Dio();
-    api=WiFiFingerprintApi(dio);
+    getData();
     _requestPermissions();
     _startAutoScan();
     enableGPS();
@@ -117,7 +124,7 @@ class _ScanWiFiState extends State<ScanWiFi> {
 
       final results=await WiFiScan.instance.getScannedResults();
 
-      wifiFingerprintData=await api.getWifiFingerprintData();
+
 
       setState(() {
         _wifiList=results;
@@ -127,10 +134,10 @@ class _ScanWiFiState extends State<ScanWiFi> {
           "rssi":wifi.level,
         }).toList();
 
-        bestLocation=calculateLocation(wifiFingerprintData, wifiList);
+        bestLocation=calculateLocation(wifiList, data);
 
         print("wifiList: $wifiList");
-        print("wifiFingerprintData: $wifiFingerprintData");
+        print("wifiFingerprintData: $data");
 
       });
 
