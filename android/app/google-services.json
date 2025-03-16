@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "1042531237919",
+    "project_id": "fir-tutorial-c4e55",
+    "storage_bucket": "fir-tutorial-c4e55.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1042531237919:android:684b52daf93fcfe91e552a",
+        "android_client_info": {
+          "package_name": "com.example.project_wifi_scan"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCsDQnbKbNOTkKWw8bdXVAxWxNEHzPa70o"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1042531237919:android:a6308f3d71389e961e552a",
+        "android_client_info": {
+          "package_name": "com.example.projectfirebase"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCsDQnbKbNOTkKWw8bdXVAxWxNEHzPa70o"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
