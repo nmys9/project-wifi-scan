@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:dio/dio.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_background_service/flutter_background_service.dart';
@@ -140,7 +141,30 @@ class _ScanWiFiState extends State<ScanWiFi> {
         print("wifiFingerprintData: $data");
 
       });
+      if(bestLocation.isNotEmpty){
+        String doctorId=FirebaseAuth.instance.currentUser!.uid;
+        DocumentSnapshot doctorDoc = await FirebaseFirestore.instance
+            .collection('users')
+            .doc(doctorId)
+            .get();
+        if(doctorDoc.exists){
+          var doctorData=doctorDoc.data() as Map<String,dynamic>;
+          String doctorName =doctorData['full_name'];
 
+          await FirebaseFirestore.instance
+              .collection('doctor_locations')
+              .doc(doctorId)
+              .set({
+            'full_name':doctorName,
+            'location': bestLocation.keys.first,
+            'timestamp': FieldValue.serverTimestamp(),
+          },SetOptions(merge: true));
+
+
+        }
+
+
+      }
     }else{
       print("لا يمكن بدء المسح. تحقق من الأذونات أو الإعدادات.");
     }
@@ -151,10 +175,16 @@ class _ScanWiFiState extends State<ScanWiFi> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(title: const Text('Scan WiFi'),),
       body: Column(
         children: [
           Text(
-            bestLocation.keys.first
+            bestLocation.keys.first,
+            style: const TextStyle(
+              color: Colors.orange,
+              fontSize: 24,
+              fontWeight: FontWeight.bold,
+            ),
           ),
           Expanded(
             child: ListView.builder(

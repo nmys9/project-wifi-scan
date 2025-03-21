@@ -47,6 +47,7 @@ dependencies:
   firebase_storage: ^12.4.4
   firebase_messaging: ^15.2.4
   firebase_auth: ^5.5.1
+  modal_progress_hud_nsn: ^0.5.1
 
 dev_dependencies:
   flutter_test:
@@ -69,6 +70,19 @@ flutter:
   # included with your application, so that you can use the icons in
   # the material Icons class.
   uses-material-design: true
+
+  assets:
+    - assets/student.png
+    - assets/doctor.png
+    - assets/academic_assistant.png
+
+
+
+  fonts:
+    - family: Tajawal
+      fonts:
+        - asset: assets/fonts/Tajawal-Regular.ttf
+        - asset: assets/fonts/Tajawal-Medium.ttf
 
   # To add assets to your application, add an assets section, like this:
   # assets:

@@ -2,6 +2,12 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'firebase_options.dart';
 import 'scan_wifi.dart';
+import 'screens/assistant/home_page_assistant.dart';
+import 'screens/doctor/home_page_doctor.dart';
+import 'screens/login_page.dart';
+import 'screens/register_user.dart';
+import 'screens/student/home_page_student.dart';
+import 'screens/user_type_page.dart';
 
 Future<void> main() async{
   WidgetsFlutterBinding.ensureInitialized();
@@ -18,7 +24,23 @@ class MyApp extends StatelessWidget {
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
-    return const MaterialApp(
+    return MaterialApp(
+      debugShowCheckedModeBanner: false,
+      theme: ThemeData(
+          appBarTheme: const AppBarTheme(
+            color: Colors.indigo,
+          )
+      ),
+      initialRoute: UserType.id,
+      routes: {
+        UserType.id:(context)=> const UserType(),
+        Login.id :(context)=> const Login(),
+        RegisterUser.id :(context)=> const RegisterUser(),
+        HomePageStudent.id :(context) => HomePageStudent(),
+        HomePageDoctor.id :(context) => HomePageDoctor(),
+        HomePageAssistant.id :(context) => HomePageAssistant(),
+
+      },
       home: ScanWiFi(),
     );
   }
