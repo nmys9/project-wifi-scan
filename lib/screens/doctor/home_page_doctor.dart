@@ -1,3 +1,5 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:project_wifi_scan/scan_wifi.dart';
 
@@ -20,8 +22,8 @@ class HomePageDoctor extends StatelessWidget{
         child: Center(
           child: ListView(
             children: [
-              FutureBuilder<String?>(
-                  future: getName(),
+              FutureBuilder<Map<String,dynamic>?>(
+                  future: getDoctorLocation(),
                   builder: (context, snapshot) {
                     if (snapshot.connectionState == ConnectionState.waiting) {
                       return const CircularProgressIndicator();
@@ -46,13 +48,13 @@ class HomePageDoctor extends StatelessWidget{
                         child: Column(
                           children: [
                             Text(
-                              snapshot.data!,
-                              style: const TextStyle(fontSize: 20),
-                              textAlign: TextAlign.center,
+                              textDirection: TextDirection.rtl,
+                              snapshot.data!['full_name'],
+                              style: const TextStyle(fontSize: 20,fontWeight: FontWeight.bold),
                             ),
-                            const Text(
-                              '**موقع الدكتور**',
-                              style: TextStyle(fontSize: 16),
+                            Text(
+                              snapshot.data!['location'],
+                              style: const TextStyle(fontSize: 16),
                             ),
                           ],
                         ),
@@ -71,6 +73,22 @@ class HomePageDoctor extends StatelessWidget{
     );
 
   }
+
+  Future<Map<String,dynamic>?> getDoctorLocation() async{
+    String doctorId=FirebaseAuth.instance.currentUser!.uid;
+    DocumentSnapshot doctorLocationDoc=
+    await FirebaseFirestore.instance
+        .collection('doctor_locations')
+        .doc(doctorId)
+        .get();
+    if (doctorLocationDoc.exists) {
+      return doctorLocationDoc.data() as Map<String, dynamic>;
+    }
+    return null;
+
+
+  }
+
 }
 
 

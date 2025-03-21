@@ -69,8 +69,8 @@ class HomePageStudent extends StatelessWidget{
                 ),
               ),
               const SizedBox(height: 50),
-              FutureBuilder<Map<String,dynamic>?>(
-                future: getDoctorLocation(),
+              FutureBuilder<List<String>>(
+                future: getDoctorsNames(),
                 builder: (context, snapshot) {
                   if (snapshot.connectionState == ConnectionState.waiting) {
                     return const CircularProgressIndicator();
@@ -106,12 +106,12 @@ class HomePageStudent extends StatelessWidget{
                             children: [
                               Text(
                                 textDirection: TextDirection.rtl,
-                                snapshot.data!['full_name'],
+                                snapshot.data![index],
                                 style: const TextStyle(fontSize: 20,fontWeight: FontWeight.bold),
                               ),
-                              Text(
-                                snapshot.data!['location'],
-                                style: const TextStyle(fontSize: 16),
+                              const Text(
+                                '**موقع الدكتور**',
+                                style: TextStyle(fontSize: 16),
                               ),
                             ],
                           ),
@@ -130,20 +130,7 @@ class HomePageStudent extends StatelessWidget{
     );
   }
 
-  Future<Map<String,dynamic>?> getDoctorLocation() async{
-    String doctorId=FirebaseAuth.instance.currentUser!.uid;
-    DocumentSnapshot doctorLocationDoc=
-              await FirebaseFirestore.instance
-                  .collection('doctor_locations')
-                  .doc(doctorId)
-                  .get();
-    if (doctorLocationDoc.exists) {
-      return doctorLocationDoc.data() as Map<String, dynamic>;
-    }
-    return null;
 
-
-  }
 
 
 
