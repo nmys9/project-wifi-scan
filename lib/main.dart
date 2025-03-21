@@ -41,7 +41,6 @@ class MyApp extends StatelessWidget {
         HomePageAssistant.id :(context) => HomePageAssistant(),
 
       },
-      home: ScanWiFi(),
     );
   }
 }
