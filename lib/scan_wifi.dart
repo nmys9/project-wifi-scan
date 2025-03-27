@@ -62,7 +62,6 @@ class _ScanWiFiState extends State<ScanWiFi> {
   List<Map<String,dynamic>> wifiList=[];
 
 
-
   Map<String,dynamic> bestLocation={};
 
   List<QueryDocumentSnapshot> data=[];
@@ -121,26 +120,21 @@ class _ScanWiFiState extends State<ScanWiFi> {
     final canScan=await WiFiScan.instance.canStartScan();
     if(canScan==CanStartScan.yes){
       await WiFiScan.instance.startScan();
-      await Future.delayed(const Duration(seconds: 2));
+      await Future.delayed(const Duration(seconds: 10));
 
       final results=await WiFiScan.instance.getScannedResults();
 
 
+      _wifiList=results;
+      wifiList=_wifiList.map((wifi)=>{
+        "ssid":wifi.ssid,
+        "bssid":wifi.bssid.toUpperCase(),
+        "rssi":wifi.level,
+      }).toList();
 
-      setState(() {
-        _wifiList=results;
-        wifiList=_wifiList.map((wifi)=>{
-          "ssid":wifi.ssid,
-          "bssid":wifi.bssid.toUpperCase(),
-          "rssi":wifi.level,
-        }).toList();
+      bestLocation=calculateLocation(wifiList, data);
 
-        bestLocation=calculateLocation(wifiList, data);
 
-        print("wifiList: $wifiList");
-        print("wifiFingerprintData: $data");
-
-      });
       if(bestLocation.isNotEmpty){
         String doctorId=FirebaseAuth.instance.currentUser!.uid;
         DocumentSnapshot doctorDoc = await FirebaseFirestore.instance
@@ -163,7 +157,6 @@ class _ScanWiFiState extends State<ScanWiFi> {
 
         }
 
-
       }
     }else{
       print("لا يمكن بدء المسح. تحقق من الأذونات أو الإعدادات.");
@@ -174,34 +167,7 @@ class _ScanWiFiState extends State<ScanWiFi> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(title: const Text('Scan WiFi'),),
-      body: Column(
-        children: [
-          Text(
-            bestLocation.keys.first,
-            style: const TextStyle(
-              color: Colors.orange,
-              fontSize: 24,
-              fontWeight: FontWeight.bold,
-            ),
-          ),
-          Expanded(
-            child: ListView.builder(
-              itemCount: _wifiList.length,
-              itemBuilder: (context, index) {
-                final wifi = _wifiList[index];
-                return ListTile(
-                  title: Text('SSID: ${wifi.ssid}'),
-                  subtitle: Text('BSSID: ${wifi.bssid}, RSSI: ${wifi.level}'),
-                );
-              },
-            ),
-          ),
-        ],
-      ),
-
-    );
+    return Container();
   }
 }
 

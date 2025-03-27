@@ -40,12 +40,12 @@ class _RegisterUserState extends State<RegisterUser> {
               child: ListView(
                 children: [
                   const SizedBox(height: 30,),
-                  const Row(
+                  Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       Text(
-                        'Add your Info',
-                        style: TextStyle(
+                        'Add ${widget.role} Info',
+                        style: const TextStyle(
                             fontSize: 32,
                         ),
                       ),

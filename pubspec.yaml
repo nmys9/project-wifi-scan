@@ -48,6 +48,7 @@ dependencies:
   firebase_messaging: ^15.2.4
   firebase_auth: ^5.5.1
   modal_progress_hud_nsn: ^0.5.1
+  rxdart: ^0.28.0
 
 dev_dependencies:
   flutter_test:

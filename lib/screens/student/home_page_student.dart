@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import '../../widgets/get_doctor_location.dart';
 import '/screens/student/student_info.dart';
 
 import '../../widgets/get_doctors_name.dart';
@@ -69,8 +70,8 @@ class HomePageStudent extends StatelessWidget{
                 ),
               ),
               const SizedBox(height: 50),
-              FutureBuilder<List<String>>(
-                future: getDoctorsNames(),
+              FutureBuilder<List<Map<String, dynamic>>> (
+                future: getDoctorsLocations(),
                 builder: (context, snapshot) {
                   if (snapshot.connectionState == ConnectionState.waiting) {
                     return const CircularProgressIndicator();
@@ -104,14 +105,18 @@ class HomePageStudent extends StatelessWidget{
                           ),
                           child: Column(
                             children: [
-                              Text(
-                                textDirection: TextDirection.rtl,
-                                snapshot.data![index],
-                                style: const TextStyle(fontSize: 20,fontWeight: FontWeight.bold),
+                              Expanded(
+                                child: Text(
+                                  textDirection: TextDirection.rtl,
+                                  snapshot.data![index]['full_name'],
+                                  style: const TextStyle(fontSize: 20,fontWeight: FontWeight.bold),
+                                ),
                               ),
-                              const Text(
-                                '**موقع الدكتور**',
-                                style: TextStyle(fontSize: 16),
+                              Expanded(
+                                child: Text(
+                                  snapshot.data![index]['location'],
+                                  style: const TextStyle(fontSize: 16),
+                                ),
                               ),
                             ],
                           ),
