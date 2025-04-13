@@ -120,7 +120,7 @@ class _ScanWiFiState extends State<ScanWiFi> {
     final canScan=await WiFiScan.instance.canStartScan();
     if(canScan==CanStartScan.yes){
       await WiFiScan.instance.startScan();
-      await Future.delayed(const Duration(seconds: 10));
+      await Future.delayed(const Duration(seconds: 2));
 
       final results=await WiFiScan.instance.getScannedResults();
 
@@ -141,22 +141,30 @@ class _ScanWiFiState extends State<ScanWiFi> {
             .collection('users')
             .doc(doctorId)
             .get();
+
         if(doctorDoc.exists){
           var doctorData=doctorDoc.data() as Map<String,dynamic>;
           String doctorName =doctorData['full_name'];
 
-          await FirebaseFirestore.instance
+          DocumentSnapshot existingDoc = await FirebaseFirestore.instance
               .collection('doctor_locations')
               .doc(doctorId)
-              .set({
-            'full_name':doctorName,
-            'location': bestLocation.keys.first,
-            'timestamp': FieldValue.serverTimestamp(),
-          },SetOptions(merge: true));
+              .get();
 
+          String? currentLocation =
+          existingDoc.exists ? (existingDoc.data() as Map<String, dynamic>)['location'] : null;
 
+          if (currentLocation != bestLocation.keys.first) {
+            await FirebaseFirestore.instance
+                .collection('doctor_locations')
+                .doc(doctorId)
+                .set({
+              'full_name': doctorName,
+              'location': bestLocation.keys.first,
+              'timestamp': FieldValue.serverTimestamp(),
+            }, SetOptions(merge: true));
+          }
         }
-
       }
     }else{
       print("لا يمكن بدء المسح. تحقق من الأذونات أو الإعدادات.");

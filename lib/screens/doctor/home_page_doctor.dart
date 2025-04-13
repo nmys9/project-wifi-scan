@@ -205,6 +205,111 @@
 //     return null;
 //   }
 // }
+//
+// import 'package:cloud_firestore/cloud_firestore.dart';
+// import 'package:firebase_auth/firebase_auth.dart';
+// import 'package:flutter/material.dart';
+// import 'package:project_wifi_scan/scan_wifi.dart';
+//
+// class HomePageDoctor extends StatefulWidget {
+//   HomePageDoctor({super.key});
+//
+//   static const String id = 'HomePageDoctor';
+//
+//   @override
+//   State<HomePageDoctor> createState() => _HomePageDoctorState();
+// }
+//
+// class _HomePageDoctorState extends State<HomePageDoctor> {
+//   // final ValueNotifier<Map<String, dynamic>?> doctorData = ValueNotifier(null);
+//   //
+//   // @override
+//   // void initState() {
+//   //   super.initState();
+//   //   setState(() {
+//   //     fetchDoctorData();
+//   //   });
+//   //
+//   // }
+//   //
+//   // Future<void> fetchDoctorData() async {
+//   //   final docSnapshot = await FirebaseFirestore.instance
+//   //       .collection('doctor_locations')
+//   //       .doc(FirebaseAuth.instance.currentUser!.uid)
+//   //       .get();
+//   //
+//   //   if (docSnapshot.exists) {
+//   //     doctorData.value = docSnapshot.data();
+//   //   }
+//   // }
+//
+//   @override
+//   Widget build(BuildContext context) {
+//     return Scaffold(
+//       appBar: AppBar(
+//         title: Text('data'),
+//       ),
+//       body: Padding(
+//         padding: const EdgeInsets.all(16),
+//         child: Center(
+//           child: ListView(
+//             children: [
+//               StreamBuilder<DocumentSnapshot>(
+//                 stream: FirebaseFirestore.instance
+//                     .collection('doctor_locations')
+//                     .doc(FirebaseAuth.instance.currentUser!.uid)
+//                     .snapshots(),
+//                 builder: (context, snapshot) {
+//                   if (snapshot.connectionState == ConnectionState.waiting) {
+//                   return const CircularProgressIndicator(); // 🔄 عرض مؤشر تحميل أثناء جلب البيانات
+//                   }
+//                   if (!snapshot.hasData || !snapshot.data!.exists) {
+//                   return const Text('No data available'); // ❌ إذا لم تكن هناك بيانات
+//                   }
+//                   final value=snapshot.data!.data() as Map<String,dynamic>;
+//
+//                   return Container(
+//                     alignment: Alignment.centerRight,
+//                     padding: const EdgeInsets.all(16),
+//                     decoration: BoxDecoration(
+//                       borderRadius: BorderRadius.circular(10.0),
+//                       boxShadow: [
+//                         BoxShadow(
+//                           color: Colors.grey.withOpacity(0.5),
+//                           spreadRadius: 2,
+//                           blurRadius: 5,
+//                           offset: const Offset(0, 3),
+//                         ),
+//                       ],
+//                       color: Colors.orange,
+//                     ),
+//                     child: Column(
+//                       children: [
+//                         Text(
+//                           value['full_name'],
+//                           style: const TextStyle(
+//                               fontSize: 20, fontWeight: FontWeight.bold),
+//                           textDirection: TextDirection.rtl,
+//                         ),
+//                         Text(
+//                           value['location'],
+//                           style: const TextStyle(fontSize: 16),
+//                         ),
+//                       ],
+//                     ),
+//                   );
+//                 },
+//               ),
+//               const ScanWiFi(),
+//             ],
+//           ),
+//         ),
+//       ),
+//     );
+//   }
+// }
+
+
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -221,79 +326,139 @@ class HomePageDoctor extends StatefulWidget {
 }
 
 class _HomePageDoctorState extends State<HomePageDoctor> {
-  final ValueNotifier<Map<String, dynamic>?> doctorData = ValueNotifier(null);
+  late Future<bool> isDoctorFuture;
 
   @override
   void initState() {
     super.initState();
-    fetchDoctorData();
+    isDoctorFuture = checkIfUserIsDoctor();
   }
 
-  Future<void> fetchDoctorData() async {
-    final docSnapshot = await FirebaseFirestore.instance
-        .collection('doctor_locations')
+  Future<bool> checkIfUserIsDoctor() async {
+    final userDoc = await FirebaseFirestore.instance
+        .collection('users') // 🔹 تأكد أن لديك مجموعة users تحتوي على جميع المستخدمين
         .doc(FirebaseAuth.instance.currentUser!.uid)
         .get();
 
-    if (docSnapshot.exists) {
-      doctorData.value = docSnapshot.data();
+    if (userDoc.exists && userDoc.data()?['role'] == 'doctor') {
+      return true;
+    } else {
+      return false;
     }
   }
+
+
+  String formatTimestamp(Timestamp timestamp){
+    final dateTime= timestamp.toDate();
+    final hour= dateTime.hour > 12 ? dateTime.hour - 12 : dateTime.hour;
+    final minute=dateTime.minute.toString().padLeft(2,'0');
+    final period = dateTime.hour >= 12 ? 'مساءاً' : 'صباحاً';
+
+    final day = dateTime.day;
+    final monthNames = [
+      '',
+      'يناير',
+      'فبراير',
+      'مارس',
+      'أبريل',
+      'مايو',
+      'يونيو',
+      'يوليو',
+      'أغسطس',
+      'سبتمبر',
+      'أكتوبر',
+      'نوفمبر',
+      'ديسمبر'
+    ];
+    final month = monthNames[dateTime.month];
+
+    return 'الساعة $hour:$minute $period , $day $month';
+  }
+
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text('data'),
-      ),
-      body: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Center(
-          child: ListView(
-            children: [
-              ValueListenableBuilder<Map<String, dynamic>?>(
-                valueListenable: doctorData,
-                builder: (context, value, child) {
-                  if (value == null) {
-                    return const CircularProgressIndicator();
-                  } else {
-                    return Container(
-                      alignment: Alignment.centerRight,
-                      padding: const EdgeInsets.all(16),
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(10.0),
-                        boxShadow: [
-                          BoxShadow(
-                            color: Colors.grey.withOpacity(0.5),
-                            spreadRadius: 2,
-                            blurRadius: 5,
-                            offset: const Offset(0, 3),
-                          ),
-                        ],
-                        color: Colors.orange,
-                      ),
-                      child: Column(
-                        children: [
-                          Text(
-                            value['full_name'],
-                            style: const TextStyle(
-                                fontSize: 20, fontWeight: FontWeight.bold),
-                            textDirection: TextDirection.rtl,
-                          ),
-                          Text(
-                            value['location'],
-                            style: const TextStyle(fontSize: 16),
-                          ),
-                        ],
-                      ),
-                    );
-                  }
-                },
+      appBar: AppBar(title: Text('Data')),
+      body: FutureBuilder<bool>(
+        future: isDoctorFuture,
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return const Center(child: CircularProgressIndicator());
+          }
+          if (!snapshot.hasData || !snapshot.data!) {
+            return const Center(child: Text('Access Denied'));
+          }
+
+          return Padding(
+            padding: const EdgeInsets.all(16),
+            child: Center(
+              child: ListView(
+                children: [
+                  StreamBuilder<DocumentSnapshot>(
+                    stream: FirebaseFirestore.instance
+                        .collection('doctor_locations')
+                        .doc(FirebaseAuth.instance.currentUser!.uid)
+                        .snapshots(),
+                    builder: (context, snapshot) {
+                      if (snapshot.connectionState == ConnectionState.waiting) {
+                        return const CircularProgressIndicator();
+                      }
+                      if (!snapshot.hasData || !snapshot.data!.exists) {
+                        return const Text('No data available');
+                      }
+
+                      final value =
+                      snapshot.data!.data() as Map<String, dynamic>;
+
+                      return Container(
+                        alignment: Alignment.centerRight,
+                        padding: const EdgeInsets.all(16),
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(10.0),
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.grey.withOpacity(0.5),
+                              spreadRadius: 2,
+                              blurRadius: 5,
+                              offset: const Offset(0, 3),
+                            ),
+                          ],
+                          color: Colors.orange,
+                        ),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.end,
+                          children: [
+                            Text(
+                              value['full_name'],
+                              style: const TextStyle(
+                                  fontSize: 20, fontWeight: FontWeight.bold),
+                              textDirection: TextDirection.rtl,
+                            ),
+                            Text(
+                              value['location'],
+                              style: const TextStyle(fontSize: 16),
+                            ),
+                            if(value['timestamp']!=null)
+                              Text(
+                                'أخر ظهور ${formatTimestamp(value['timestamp'])}',
+                                style: const TextStyle(
+                                  fontSize: 14,
+                                  color: Colors.black54,
+                                ),
+                                textDirection: TextDirection.rtl,
+                              ),
+                          ],
+                        ),
+                      );
+                    },
+                  ),
+                  const ScanWiFi(),
+                ],
               ),
-              const ScanWiFi(),
-            ],
-          ),
-        ),
+            ),
+          );
+        },
       ),
     );
   }
