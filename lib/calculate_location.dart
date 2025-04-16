@@ -2,7 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 
 Map<String,double> calculateLocation(List<Map<String,dynamic>> wifiList,List<QueryDocumentSnapshot > data){
   Map<String,double> locationScores={};
-  double confidenceThreshold = 0.7;
+  double confidenceThreshold = 5;
 
   for(var wifi in wifiList){
     for(var doc in data ){

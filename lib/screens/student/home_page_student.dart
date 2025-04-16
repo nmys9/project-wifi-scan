@@ -14,6 +14,33 @@ class HomePageStudent extends StatelessWidget{
   static const String id='HomePageStudent';
 
 
+  String formatTimestamp(Timestamp timestamp){
+    final dateTime= timestamp.toDate();
+    final hour= dateTime.hour > 12 ? dateTime.hour - 12 : dateTime.hour;
+    final minute=dateTime.minute.toString().padLeft(2,'0');
+    final period = dateTime.hour >= 12 ? 'مساءاً' : 'صباحاً';
+
+    final day = dateTime.day;
+    final monthNames = [
+      '',
+      'يناير',
+      'فبراير',
+      'مارس',
+      'أبريل',
+      'مايو',
+      'يونيو',
+      'يوليو',
+      'أغسطس',
+      'سبتمبر',
+      'أكتوبر',
+      'نوفمبر',
+      'ديسمبر'
+    ];
+    final month = monthNames[dateTime.month];
+
+    return 'الساعة $hour:$minute $period , $day $month';
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -118,6 +145,19 @@ class HomePageStudent extends StatelessWidget{
                                   style: const TextStyle(fontSize: 16),
                                 ),
                               ),
+                              if(snapshot.data![index]['timestamp']!=null)
+                                Expanded(
+                                  child: Text.rich(
+                                    TextSpan(
+                                      children: [
+                                        const TextSpan(text: 'آخر ظهور ', style: TextStyle(fontWeight: FontWeight.bold)),
+                                        TextSpan(text: formatTimestamp(snapshot.data![index]['timestamp'])),
+                                      ],
+                                    ),
+                                    textDirection: TextDirection.rtl,
+                                    style: const TextStyle(fontSize: 14, color: Colors.black54),
+                                  ),
+                                ),
                             ],
                           ),
                         );
