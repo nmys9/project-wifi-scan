@@ -92,6 +92,7 @@ class _LoginState extends State<Login> {
                       password=data;
                     },
                     hintText: 'Password',
+                    isPassword: true,
                   ),
                   const SizedBox(
                     height: 20,

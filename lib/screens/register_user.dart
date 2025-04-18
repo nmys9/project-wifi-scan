@@ -78,6 +78,7 @@ class _RegisterUserState extends State<RegisterUser> {
                       password=data;
                     },
                     hintText: 'Password',
+                    isPassword: true,
                   ),
                   const SizedBox(
                     height: 75,

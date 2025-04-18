@@ -28,7 +28,7 @@ Future<void> initializeService() async {
 
   service.startService();
 }
-
+@pragma('vm:entry-point')
 void onStart(ServiceInstance service) async {
   if (service is AndroidServiceInstance) {
     service.setAsForegroundService();
@@ -144,25 +144,27 @@ class _ScanWiFiState extends State<ScanWiFi> {
 
         if(doctorDoc.exists){
           var doctorData=doctorDoc.data() as Map<String,dynamic>;
-          String doctorName =doctorData['full_name'];
+          if(doctorData['role'] == 'doctor'){
+            String doctorName =doctorData['full_name'];
 
-          DocumentSnapshot existingDoc = await FirebaseFirestore.instance
-              .collection('doctor_locations')
-              .doc(doctorId)
-              .get();
-
-          String? currentLocation =
-          existingDoc.exists ? (existingDoc.data() as Map<String, dynamic>)['location'] : null;
-
-          if (currentLocation != bestLocation.keys.first) {
-            await FirebaseFirestore.instance
+            DocumentSnapshot existingDoc = await FirebaseFirestore.instance
                 .collection('doctor_locations')
                 .doc(doctorId)
-                .set({
-              'full_name': doctorName,
-              'location': bestLocation.keys.first,
-              'timestamp': FieldValue.serverTimestamp(),
-            }, SetOptions(merge: true));
+                .get();
+
+            String? currentLocation =
+            existingDoc.exists ? (existingDoc.data() as Map<String, dynamic>)['location'] : null;
+
+            if (currentLocation != bestLocation.keys.first) {
+              await FirebaseFirestore.instance
+                  .collection('doctor_locations')
+                  .doc(doctorId)
+                  .set({
+                'full_name': doctorName,
+                'location': bestLocation.keys.first,
+                'timestamp': FieldValue.serverTimestamp(),
+              }, SetOptions(merge: true));
+            }
           }
         }
       }
