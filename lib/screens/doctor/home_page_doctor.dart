@@ -315,6 +315,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:project_wifi_scan/scan_wifi.dart';
+import 'package:project_wifi_scan/screens/doctor/doctor_info.dart';
 
 class HomePageDoctor extends StatefulWidget {
   HomePageDoctor({super.key});
@@ -395,63 +396,73 @@ class _HomePageDoctorState extends State<HomePageDoctor> {
             child: Center(
               child: ListView(
                 children: [
-                  StreamBuilder<DocumentSnapshot>(
-                    stream: FirebaseFirestore.instance
-                        .collection('doctor_locations')
-                        .doc(FirebaseAuth.instance.currentUser!.uid)
-                        .snapshots(),
-                    builder: (context, snapshot) {
-                      if (snapshot.connectionState == ConnectionState.waiting) {
-                        return const CircularProgressIndicator();
-                      }
-                      if (!snapshot.hasData || !snapshot.data!.exists) {
-                        return const Text('No data available');
-                      }
-
-                      final value =
-                      snapshot.data!.data() as Map<String, dynamic>;
-
-                      return Container(
-                        alignment: Alignment.centerRight,
-                        padding: const EdgeInsets.all(16),
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(10.0),
-                          boxShadow: [
-                            BoxShadow(
-                              color: Colors.grey.withOpacity(0.5),
-                              spreadRadius: 2,
-                              blurRadius: 5,
-                              offset: const Offset(0, 3),
-                            ),
-                          ],
-                          color: Colors.orange,
-                        ),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.end,
-                          children: [
-                            Text(
-                              value['full_name'],
-                              style: const TextStyle(
-                                  fontSize: 20, fontWeight: FontWeight.bold),
-                              textDirection: TextDirection.rtl,
-                            ),
-                            Text(
-                              value['location'],
-                              style: const TextStyle(fontSize: 16),
-                            ),
-                            if(value['timestamp']!=null)
-                              Text(
-                                'أخر ظهور ${formatTimestamp(value['timestamp'])}',
-                                style: const TextStyle(
-                                  fontSize: 14,
-                                  color: Colors.black54,
-                                ),
-                                textDirection: TextDirection.rtl,
-                              ),
-                          ],
+                  GestureDetector(
+                    onTap: (){
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context)=> const DoctorInfo(),
                         ),
                       );
                     },
+                    child: StreamBuilder<DocumentSnapshot>(
+                      stream: FirebaseFirestore.instance
+                          .collection('doctor_locations')
+                          .doc(FirebaseAuth.instance.currentUser!.uid)
+                          .snapshots(),
+                      builder: (context, snapshot) {
+                        if (snapshot.connectionState == ConnectionState.waiting) {
+                          return const CircularProgressIndicator();
+                        }
+                        if (!snapshot.hasData || !snapshot.data!.exists) {
+                          return const Text('No data available');
+                        }
+
+                        final value =
+                        snapshot.data!.data() as Map<String, dynamic>;
+
+                        return Container(
+                          alignment: Alignment.centerRight,
+                          padding: const EdgeInsets.all(16),
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(10.0),
+                            boxShadow: [
+                              BoxShadow(
+                                color: Colors.grey.withOpacity(0.5),
+                                spreadRadius: 2,
+                                blurRadius: 5,
+                                offset: const Offset(0, 3),
+                              ),
+                            ],
+                            color: Colors.orange,
+                          ),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.end,
+                            children: [
+                              Text(
+                                value['full_name'],
+                                style: const TextStyle(
+                                    fontSize: 20, fontWeight: FontWeight.bold),
+                                textDirection: TextDirection.rtl,
+                              ),
+                              Text(
+                                value['location'],
+                                style: const TextStyle(fontSize: 16),
+                              ),
+                              if(value['timestamp']!=null)
+                                Text(
+                                  'أخر ظهور ${formatTimestamp(value['timestamp'])}',
+                                  style: const TextStyle(
+                                    fontSize: 14,
+                                    color: Colors.black54,
+                                  ),
+                                  textDirection: TextDirection.rtl,
+                                ),
+                            ],
+                          ),
+                        );
+                      },
+                    ),
                   ),
                   const ScanWiFi(),
                 ],

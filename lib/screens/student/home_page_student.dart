@@ -132,21 +132,21 @@ class HomePageStudent extends StatelessWidget{
                           ),
                           child: Column(
                             children: [
-                              Expanded(
+                              Align(
                                 child: Text(
                                   textDirection: TextDirection.rtl,
                                   snapshot.data![index]['full_name'],
                                   style: const TextStyle(fontSize: 20,fontWeight: FontWeight.bold),
                                 ),
                               ),
-                              Expanded(
+                              Align(
                                 child: Text(
                                   snapshot.data![index]['location'],
                                   style: const TextStyle(fontSize: 16),
                                 ),
                               ),
                               if(snapshot.data![index]['timestamp']!=null)
-                                Expanded(
+                                Align(
                                   child: Text.rich(
                                     TextSpan(
                                       children: [
