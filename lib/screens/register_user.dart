@@ -4,8 +4,8 @@ import 'package:modal_progress_hud_nsn/modal_progress_hud_nsn.dart';
 import '../screens/login_page.dart';
 import '../widgets/user_text_field.dart';
 
-import '../function/register_user.dart';
-import '../function/show_snack_bar.dart';
+import '../widgets/register_user.dart';
+import '../widgets/show_snack_bar.dart';
 import '../widgets/button.dart';
 
 

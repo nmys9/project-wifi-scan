@@ -8,7 +8,7 @@ import 'doctor/home_page_doctor.dart';
 import 'student/home_page_student.dart';
 import 'user_type_page.dart';
 
-import '../function/show_snack_bar.dart';
+import '../widgets/show_snack_bar.dart';
 import '../widgets/button.dart';
 
 

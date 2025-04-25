@@ -137,6 +137,24 @@ class _StudentInfoState extends State<StudentInfo> {
             'email': _emailController!.text,
             // يمكنك إضافة المزيد من الحقول هنا
           });
+
+
+          if (_emailController!.text != studentData!['email']) {
+            try {
+              await user.verifyBeforeUpdateEmail(_emailController!.text);
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(
+                    content: Text('تم إرسال رابط التحقق إلى البريد الإلكتروني الجديد')),
+              );
+
+            } catch (authError) {
+
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(content: Text('حدث خطأ أثناء تحديث البريد الإلكتروني: $authError')),
+              );
+            }
+          }
+
           setState(() {
             studentData!['full_name'] = _fullNameController!.text;
             studentData!['email'] = _emailController!.text;

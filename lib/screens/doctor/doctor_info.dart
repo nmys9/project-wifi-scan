@@ -59,8 +59,31 @@ class _DoctorInfoState extends State<DoctorInfo> {
               .update({
             'full_name': _fullNameController!.text,
             'email': _emailController!.text,
-            // يمكنك إضافة المزيد من الحقول المشتركة هنا
           });
+
+          await FirebaseFirestore.instance
+              .collection('doctor_locations')
+              .doc(user.uid)
+              .update({
+            'full_name': _fullNameController!.text,
+          });
+
+          if (_emailController!.text != doctorData!['email']) {
+            try {
+              await user.verifyBeforeUpdateEmail(_emailController!.text);
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(
+                    content: Text('تم إرسال رابط التحقق إلى البريد الإلكتروني الجديد')),
+              );
+
+            } catch (authError) {
+
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(content: Text('حدث خطأ أثناء تحديث البريد الإلكتروني: $authError')),
+              );
+            }
+          }
+
           setState(() {
             doctorData!['full_name'] = _fullNameController!.text;
             doctorData!['email'] = _emailController!.text;
@@ -69,7 +92,6 @@ class _DoctorInfoState extends State<DoctorInfo> {
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(content: Text('تم حفظ التعديلات بنجاح')),
           );
-          Navigator.pop(context,doctorData);
         } catch (e) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(content: Text('حدث خطأ أثناء الحفظ: $e')),
