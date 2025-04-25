@@ -1,18 +1,36 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:project_wifi_scan/screens/user_type_page.dart';
 import '../../widgets/get_doctor_location.dart';
 import '/screens/student/student_info.dart';
 
-import '../../widgets/get_doctors_name.dart';
 import '../../widgets/get_user_name.dart';
 
 
-class HomePageStudent extends StatelessWidget{
+class HomePageStudent extends StatefulWidget{
   HomePageStudent({super.key});
-
   static const String id='HomePageStudent';
 
+  @override
+  State<HomePageStudent> createState() => _HomePageStudentState();
+}
+
+class _HomePageStudentState extends State<HomePageStudent> {
+  late Future<String?> _nameFuture;
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    _nameFuture=getName();
+  }
+
+  void _refreshName(){
+    setState(() {
+      _nameFuture= getName();
+    });
+  }
 
   String formatTimestamp(Timestamp timestamp){
     final dateTime= timestamp.toDate();
@@ -41,11 +59,23 @@ class HomePageStudent extends StatelessWidget{
     return 'الساعة $hour:$minute $period , $day $month';
   }
 
+  void logout(BuildContext context)async{
+    await FirebaseAuth.instance.signOut();
+    Navigator.of(context).pushReplacementNamed(UserType.id);
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Home Page Student'),
+        title: const Text('Home Page Student'),
+        actions: [
+          IconButton(
+              onPressed: ()=> logout(context),
+              icon: const Icon(Icons.logout),
+            tooltip: 'Logout',
+          ),
+        ],
       ),
       body: Padding(
         padding: const EdgeInsets.all(16),
@@ -53,16 +83,17 @@ class HomePageStudent extends StatelessWidget{
           child: ListView(
             children: [
               GestureDetector(
-                onTap: (){
-                  Navigator.push(
+                onTap: () async{
+                  await Navigator.push(
                     context,
                     MaterialPageRoute(
                       builder: (context)=> const StudentInfo(),
                     ),
                   );
+                  _refreshName();
                 },
                 child: FutureBuilder<String?>(
-                  future: getName(),
+                  future: _nameFuture,
                   builder: (context, snapshot) {
                     if (snapshot.connectionState == ConnectionState.waiting) {
                       return const CircularProgressIndicator();
@@ -79,7 +110,7 @@ class HomePageStudent extends StatelessWidget{
                               color: Colors.grey.withOpacity(0.5),
                               spreadRadius: 2,
                               blurRadius: 5,
-                              offset: Offset(0, 3), // changes position of shadow
+                              offset: const Offset(0, 3), // changes position of shadow
                             ),
                           ],
                           color: Colors.orange,
@@ -105,17 +136,13 @@ class HomePageStudent extends StatelessWidget{
                   } else if (snapshot.hasError) {
                     return Text('Error: ${snapshot.error}');
                   } else if (snapshot.hasData && snapshot.data != null) {
-                    return GridView.builder(
-                      gridDelegate:  const SliverGridDelegateWithFixedCrossAxisCount(
-                        crossAxisCount: 2,
-                        crossAxisSpacing: 10,
-                        mainAxisSpacing: 10,
-                      ),
+                    return ListView.builder(
                       shrinkWrap: true,
                       physics: const NeverScrollableScrollPhysics(),
                       itemCount: snapshot.data!.length,
                       itemBuilder: (context, index) {
                         return Container(
+                          width:  double.infinity,
                           margin: const EdgeInsets.symmetric(vertical: 8),
                           padding: const EdgeInsets.all(16),
                           decoration: BoxDecoration(
@@ -124,39 +151,36 @@ class HomePageStudent extends StatelessWidget{
                                 color: Colors.grey.withOpacity(0.5),
                                 spreadRadius: 2,
                                 blurRadius: 5,
-                                offset: Offset(0, 3), // changes position of shadow
+                                offset: const Offset(0, 3), // changes position of shadow
                               ),
                             ],
                             color: Colors.blue[100],
                             borderRadius: BorderRadius.circular(8),
                           ),
                           child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.end,
                             children: [
-                              Align(
-                                child: Text(
-                                  textDirection: TextDirection.rtl,
-                                  snapshot.data![index]['full_name'],
-                                  style: const TextStyle(fontSize: 20,fontWeight: FontWeight.bold),
-                                ),
+                              Text(
+                                snapshot.data![index]['full_name'],
+                                textDirection: TextDirection.rtl,
+                                style: const TextStyle(fontSize: 20,fontWeight: FontWeight.bold),
                               ),
-                              Align(
-                                child: Text(
-                                  snapshot.data![index]['location'],
-                                  style: const TextStyle(fontSize: 16),
-                                ),
+                              const SizedBox(height: 8,),
+                              Text(
+                                snapshot.data![index]['location'],
+                                style: const TextStyle(fontSize: 16),
                               ),
+                              const SizedBox(height: 8,),
                               if(snapshot.data![index]['timestamp']!=null)
-                                Align(
-                                  child: Text.rich(
-                                    TextSpan(
-                                      children: [
-                                        const TextSpan(text: 'آخر ظهور ', style: TextStyle(fontWeight: FontWeight.bold)),
-                                        TextSpan(text: formatTimestamp(snapshot.data![index]['timestamp'])),
-                                      ],
-                                    ),
-                                    textDirection: TextDirection.rtl,
-                                    style: const TextStyle(fontSize: 14, color: Colors.black54),
+                                Text.rich(
+                                  TextSpan(
+                                    children: [
+                                      const TextSpan(text: 'آخر ظهور ', style: TextStyle(fontWeight: FontWeight.bold)),
+                                      TextSpan(text: formatTimestamp(snapshot.data![index]['timestamp'])),
+                                    ],
                                   ),
+                                  textDirection: TextDirection.rtl,
+                                  style: const TextStyle(fontSize: 14, color: Colors.black54),
                                 ),
                             ],
                           ),
@@ -174,11 +198,6 @@ class HomePageStudent extends StatelessWidget{
       ),
     );
   }
-
-
-
-
-
 }
 //
 //

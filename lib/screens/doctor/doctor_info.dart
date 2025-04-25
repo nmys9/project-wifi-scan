@@ -69,6 +69,7 @@ class _DoctorInfoState extends State<DoctorInfo> {
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(content: Text('تم حفظ التعديلات بنجاح')),
           );
+          Navigator.pop(context,doctorData);
         } catch (e) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(content: Text('حدث خطأ أثناء الحفظ: $e')),

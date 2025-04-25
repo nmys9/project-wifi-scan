@@ -316,6 +316,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:project_wifi_scan/scan_wifi.dart';
 import 'package:project_wifi_scan/screens/doctor/doctor_info.dart';
+import 'package:project_wifi_scan/screens/user_type_page.dart';
 
 class HomePageDoctor extends StatefulWidget {
   HomePageDoctor({super.key});
@@ -328,6 +329,7 @@ class HomePageDoctor extends StatefulWidget {
 
 class _HomePageDoctorState extends State<HomePageDoctor> {
   late Future<bool> isDoctorFuture;
+  Map<String, dynamic>? doctorData;
 
   @override
   void initState() {
@@ -376,11 +378,25 @@ class _HomePageDoctorState extends State<HomePageDoctor> {
     return 'الساعة $hour:$minute $period , $day $month';
   }
 
+  void logout(BuildContext) async{
+    await FirebaseAuth.instance.signOut();
+    Navigator.of(context).pushReplacementNamed(UserType.id);
+  }
+
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text('Data')),
+      appBar: AppBar(
+          title: const Text('Data'),
+        actions: [
+          IconButton(
+            onPressed: ()=> logout(context),
+            icon: const Icon(
+                Icons.logout),
+          ),
+        ],
+      ),
       body: FutureBuilder<bool>(
         future: isDoctorFuture,
         builder: (context, snapshot) {
@@ -397,13 +413,18 @@ class _HomePageDoctorState extends State<HomePageDoctor> {
               child: ListView(
                 children: [
                   GestureDetector(
-                    onTap: (){
-                      Navigator.push(
+                    onTap: () async{
+                      final updateData= await Navigator.push(
                         context,
                         MaterialPageRoute(
                           builder: (context)=> const DoctorInfo(),
                         ),
                       );
+                      if(updateData != null){
+                        setState(() {
+                          doctorData=updateData;
+                        });
+                      }
                     },
                     child: StreamBuilder<DocumentSnapshot>(
                       stream: FirebaseFirestore.instance

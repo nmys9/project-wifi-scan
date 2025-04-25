@@ -10,6 +10,7 @@ Future<List<Map<String, dynamic>>> getDoctorsLocations() async {
     doctorsLocations.add({
       'full_name': doctorData['full_name'],
       'location': doctorData['location'],
+      'timestamp':doctorData['timestamp'],
     });
   }
   return doctorsLocations;

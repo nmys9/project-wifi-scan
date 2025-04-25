@@ -61,7 +61,7 @@ class _UserFormTextFieldState extends State<UserFormTextField> {
           ): null
       ),
       textAlign: TextAlign.right,
-      textDirection: TextDirection.rtl,
+      // textDirection: TextDirection.rtl,
       keyboardType: TextInputType.text,
       style: const TextStyle(
         fontFamily: 'Tajawal',
