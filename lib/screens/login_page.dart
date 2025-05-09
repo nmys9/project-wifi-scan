@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:modal_progress_hud_nsn/modal_progress_hud_nsn.dart';
+import 'package:project_wifi_scan/screens/access_denied_page.dart';
 import '../screens/assistant/home_page_assistant.dart';
 import '../widgets/user_text_field.dart';
 import 'doctor/home_page_doctor.dart';
@@ -167,6 +168,36 @@ class _LoginState extends State<Login> {
     );
   }
 
+
+  // Future<void> signInUser() async {
+  //   final FirebaseAuth _auth = FirebaseAuth.instance;
+  //   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+  //   final UserCredential = await _auth.signInWithEmailAndPassword(
+  //     email: email!,
+  //     password: password!,
+  //   );
+  //   final user = UserCredential.user;
+  //   if (user != null) {
+  //     final userDoc = await _firestore.collection('users')
+  //         .doc(user.uid)
+  //         .get();
+  //     final userData = userDoc.data();
+  //
+  //     if (userData == null || userData['role'] == null) {
+  //       await _auth.signOut();
+  //       Navigator.pushReplacementNamed(context, AccessDeniedPage.id);
+  //       return;
+  //     }
+  //
+  //     String role = userData['role'];
+  //     if (role != 'student' && role != 'doctor' && role != 'academic_assistant') {
+  //       await _auth.signOut();
+  //       Navigator.pushReplacementNamed(context, AccessDeniedPage.id);
+  //       return;
+  //     }
+  //   }
+  // }
+
   Future<void> navigateBasedOnRole(BuildContext context) async{
     User? user=FirebaseAuth.instance.currentUser;
     if(user != null){
@@ -180,7 +211,7 @@ class _LoginState extends State<Login> {
             Navigator.pushReplacementNamed(context, HomePageStudent.id);
           }else if (role == 'doctor') {
             Navigator.pushReplacementNamed(context, HomePageDoctor.id);
-          } else if (role == 'academic_assistant') {
+          } else if (role == 'assistant') {
             Navigator.pushReplacementNamed(context, HomePageAssistant.id);
           } else {
             Navigator.pushReplacementNamed(context, HomePageStudent.id); // صفحة افتراضية إذا لم يتم العثور على الدور

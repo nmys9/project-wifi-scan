@@ -319,7 +319,7 @@ import 'package:project_wifi_scan/screens/doctor/doctor_info.dart';
 import 'package:project_wifi_scan/screens/user_type_page.dart';
 
 class HomePageDoctor extends StatefulWidget {
-  HomePageDoctor({super.key});
+  const HomePageDoctor({super.key});
 
   static const String id = 'HomePageDoctor';
 

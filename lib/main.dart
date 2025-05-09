@@ -1,6 +1,6 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
-import 'package:project_wifi_scan/screens/student/show_all_doctor.dart';
+import 'package:project_wifi_scan/screens/access_denied_page.dart';
 import 'firebase_options.dart';
 import 'scan_wifi.dart';
 import 'screens/assistant/home_page_assistant.dart';
@@ -38,9 +38,11 @@ class MyApp extends StatelessWidget {
         Login.id :(context)=> const Login(),
         RegisterUser.id :(context)=> const RegisterUser(),
         HomePageStudent.id :(context) => HomePageStudent(),
-        HomePageDoctor.id :(context) => HomePageDoctor(),
-        HomePageAssistant.id :(context) => HomePageAssistant(),
+        HomePageDoctor.id :(context) => const HomePageDoctor(),
+        HomePageAssistant.id :(context) => const HomePageAssistant(),
         // ShowAllDoctor.id :(context) => ShowAllDoctor(),
+        AccessDeniedPage.id: (context) => const AccessDeniedPage(),
+
 
       },
     );
