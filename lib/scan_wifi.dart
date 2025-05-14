@@ -80,8 +80,8 @@ class _ScanWiFiState extends State<ScanWiFi> {
     super.initState();
     getData();
     _requestPermissions();
-    _startAutoScan();
     enableGPS();
+    _startAutoScan();
   }
 
   Future<void> enableGPS() async {

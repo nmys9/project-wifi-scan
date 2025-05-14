@@ -2,12 +2,12 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 
 Map<String,double> calculateLocation(List<Map<String,dynamic>> wifiList,List<QueryDocumentSnapshot > data){
   Map<String,double> locationScores={};
-  double confidenceThreshold = 0.5;
+  double confidenceThreshold = 0.1;
 
   for(var wifi in wifiList){
     for(var doc in data ){
       Map<String,dynamic> docData=doc.data() as Map<String,dynamic>;
-      if(wifi['bssid']==docData['bssid']){
+      if(wifi['bssid'].toString().toUpperCase() == docData['bssid'].toString().toUpperCase()){
         double rssiAvg=(docData['rssi_max']+docData['rssi_min'])/2;
         double rssiDiff=(wifi['rssi']-rssiAvg).abs();
 
@@ -18,18 +18,23 @@ Map<String,double> calculateLocation(List<Map<String,dynamic>> wifiList,List<Que
       }
     }
   }
+
   if (locationScores.isEmpty) {
-    return {"No Data": 0};
+    return {"خارج الجامعة": 0};
   }
   String bestLocation =locationScores.keys.reduce((a,b)=> locationScores[a]! > locationScores[b]! ? a: b);
 
   double bestScore = locationScores[bestLocation]!;
 
+  print("Location Scores: $locationScores");
+  print("Best Location: $bestLocation, Best Score: $bestScore, Threshold: $confidenceThreshold");
+
   if(bestScore >= confidenceThreshold){
     return {bestLocation: bestScore};
   }else{
-    return {"خارج الجامعة": bestScore};
+    return {"داخل الجامعة": bestScore};
   }
+
 
   // return {bestLocation:locationScores[bestLocation]!};
 }

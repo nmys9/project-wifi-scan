@@ -39,7 +39,7 @@ class MyApp extends StatelessWidget {
         RegisterUser.id :(context)=> const RegisterUser(),
         HomePageStudent.id :(context) => HomePageStudent(),
         HomePageDoctor.id :(context) => const HomePageDoctor(),
-        HomePageAssistant.id :(context) => const HomePageAssistant(),
+        HomePageAssistant.id :(context) => HomePageAssistant(),
         // ShowAllDoctor.id :(context) => ShowAllDoctor(),
         AccessDeniedPage.id: (context) => const AccessDeniedPage(),
 

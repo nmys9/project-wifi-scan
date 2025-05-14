@@ -139,7 +139,7 @@ class UserType extends StatelessWidget{
                   Navigator.push(
                     context,
                     MaterialPageRoute(
-                      builder: (context)=> const RegisterUser(role: 'student'),
+                      builder: (context)=> const Login(role: 'student'),
                     ),
                   );
                   print('student');
@@ -155,7 +155,7 @@ class UserType extends StatelessWidget{
                   Navigator.push(
                     context,
                     MaterialPageRoute(
-                      builder: (context)=> const RegisterUser(role: 'doctor'),
+                      builder: (context)=> const Login(role: 'doctor'),
                     ),
                   );
                   print('doctor');
@@ -171,7 +171,7 @@ class UserType extends StatelessWidget{
                   Navigator.push(
                     context,
                     MaterialPageRoute(
-                      builder: (context)=> const RegisterUser(role: 'assistant'),
+                      builder: (context)=> const Login(role: 'assistant'),
                     ),
                   );
                   print('assistant');
@@ -180,30 +180,6 @@ class UserType extends StatelessWidget{
                   name: 'Academic Assistant',
                   imagePath: 'assets/academic_assistant.png',
                 ),
-              ),
-              const SizedBox(height: 30,),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  const Text(
-                    'do have an account? ',
-                    style: TextStyle(
-                      fontSize: 20,
-                    ),
-                  ),
-                  GestureDetector(
-                    onTap: (){
-                      Navigator.pushNamed(context, Login.id);
-                    },
-                    child: const Text(
-                      ' LogIn',
-                      style: TextStyle(
-                        fontSize: 20,
-                      ),
-                    ),
-                  ),
-
-                ],
               ),
             ],
           ),
