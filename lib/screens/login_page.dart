@@ -54,11 +54,11 @@ class _LoginState extends State<Login> {
                   const SizedBox(
                     height: 75,
                   ),
-                  const Row(
+                  Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       Text(
-                        'My App',
+                        '${widget.role} login',
                         style: TextStyle(
                             fontSize: 32,
                             color: Colors.black,
@@ -68,20 +68,6 @@ class _LoginState extends State<Login> {
                   ),
                   const SizedBox(
                     height: 75,
-                  ),
-                  const Row(
-                    children: [
-                      Text(
-                        'LogIn',
-                        style: TextStyle(
-                          fontSize: 24,
-                          color: Colors.white,
-                        ),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(
-                    height: 20,
                   ),
                   UserFormTextField(
                     onChanged: (data){

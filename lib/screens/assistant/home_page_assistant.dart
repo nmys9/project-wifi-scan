@@ -1,7 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-
+import 'package:project_wifi_scan/screens/user_type_page.dart';
 import '../doctor/send_notification_page.dart';
 
 class HomePageAssistant extends StatefulWidget{
@@ -38,11 +38,24 @@ class _HomePageAssistantState extends State<HomePageAssistant> {
       _selectedIndex = index;
     });
   }
+  void logout(BuildContext context)async{
+    await FirebaseAuth.instance.signOut();
+    Navigator.of(context).pushReplacementNamed(UserType.id);
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text(_selectedIndex == 0 ? 'Assistant Home' : "Assistant Notifications")),
+      appBar: AppBar(
+        title: Text(_selectedIndex == 0 ? 'Assistant Home' : "Assistant Notifications"),
+        actions: [
+          IconButton(
+            onPressed: ()=> logout(context),
+            icon: const Icon(Icons.logout),
+            tooltip: 'Logout',
+          ),
+        ],
+      ),
       body: _pages[_selectedIndex],
       floatingActionButton: _selectedIndex == 0 ? SizedBox() : FloatingActionButton(
         onPressed: (){
