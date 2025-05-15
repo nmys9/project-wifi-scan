@@ -109,17 +109,68 @@
 
 
 
+import 'dart:developer';
+
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
+import 'package:permission_handler/permission_handler.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import '../screens/register_user.dart';
 import '../widgets/user_type_item.dart';
 
 import 'login_page.dart';
 
-class UserType extends StatelessWidget{
+class UserType extends StatefulWidget{
   const UserType({super.key});
 
   static const String id='UserType';
+
+  @override
+  State<UserType> createState() => _UserTypeState();
+}
+
+class _UserTypeState extends State<UserType> {
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    requestPermissions();
+    FirebaseMessaging.onMessage.listen((RemoteMessage message) {
+      print("onMessage: $message");
+      print("onMessage: ${message.data}");
+    });
+    Future.delayed(const Duration(seconds:1), () async {
+      FirebaseMessaging.instance.getToken().then((value) async {
+        SharedPreferences prefs = await SharedPreferences.getInstance();
+        log("fcmToken ${value}");
+        await prefs.setString("fcmToken", value??"");
+      });
+    });
+  }
+
+  Future<void> requestPermissions() async {
+    PermissionStatus locationStatus = await Permission.location.request();
+    if (locationStatus.isGranted) {
+      print("Location Permission granted.");
+      await FirebaseMessaging.instance.subscribeToTopic("sponsor_notification");
+
+    } else if (locationStatus.isDenied) {
+      print("Location Permission denied.");
+      await FirebaseMessaging.instance.unsubscribeFromTopic("sponsor_notification");
+
+    }
+
+    PermissionStatus notificationStatus = await Permission.notification.request();
+    if (notificationStatus.isGranted) {
+      print("Notification Permission granted.");
+
+    } else if (notificationStatus.isDenied) {
+      print("Notification Permission denied.");
+
+    }
+  }
+
+
 
   @override
   Widget build(BuildContext context) {
