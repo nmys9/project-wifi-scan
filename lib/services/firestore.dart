@@ -57,6 +57,7 @@ class FirestoreService{
 
         doctorsWithLocation.add({
           ...doctorData,
+          'uid': doctorId,
           'location': locationData?['location'],
           'timestamp': locationData?['timestamp'],
         });
@@ -89,6 +90,7 @@ class FirestoreService{
 
   Future<void> deleteUser(String userId) async {
     try {
+      print("Deleting user with ID: $userId");
       await users.doc(userId).delete();
       await doctorLocations.doc(userId).delete();
 
