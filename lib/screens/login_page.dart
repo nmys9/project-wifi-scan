@@ -1,16 +1,14 @@
 import 'dart:developer';
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:modal_progress_hud_nsn/modal_progress_hud_nsn.dart';
-import 'package:project_wifi_scan/screens/access_denied_page.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../screens/assistant/home_page_assistant.dart';
 import '../widgets/user_text_field.dart';
 import 'doctor/home_page_doctor.dart';
 import 'student/home_page_student.dart';
-import 'user_type_page.dart';
+
 
 import '../widgets/show_snack_bar.dart';
 import '../widgets/button.dart';
@@ -35,13 +33,14 @@ class _LoginState extends State<Login> {
   GlobalKey<FormState> formKey=GlobalKey();
   bool isLoding=false;
 
+
   @override
   Widget build(BuildContext context) {
     return ModalProgressHUD(
       inAsyncCall: isLoding,
       child: Scaffold(
         appBar: AppBar(
-          title: Text('Login'),
+          title: const Text('Login'),
         ),
         // backgroundColor:kPrimaryColor,
         body:Padding(
@@ -59,7 +58,7 @@ class _LoginState extends State<Login> {
                     children: [
                       Text(
                         '${widget.role} login',
-                        style: TextStyle(
+                        style: const TextStyle(
                             fontSize: 32,
                             color: Colors.black,
                         ),
@@ -122,6 +121,19 @@ class _LoginState extends State<Login> {
                     },
                     text: 'LogIn',
                   ),
+                  const SizedBox(height: 8,),
+                  Align(
+                    alignment: Alignment.center,
+                    child: TextButton(
+                      onPressed: () {
+                        _showForgetPasswordDialog(context);
+                      },
+                      child: const Text(
+                        'Forgot password?',
+                        style: TextStyle(color: Colors.blue,fontWeight: FontWeight.bold),
+                      ),
+                    ),
+                  ),
                 ],
               ),
             ),
@@ -131,12 +143,7 @@ class _LoginState extends State<Login> {
     );
   }
 
-  // Future<void> signInUser() async {
-  //   UserCredential userCredential=await FirebaseAuth.instance.signInWithEmailAndPassword(
-  //     email: email!,
-  //     password: password!,
-  //   );
-  // }
+
 
   Future<bool> signInUser() async {
     try {
@@ -154,9 +161,7 @@ class _LoginState extends State<Login> {
         if (userDoc.exists) {
           final userData = userDoc.data() as Map<String, dynamic>;
           final String storedRole = userData['role'];
-          // final String storedPassword=userData['password'];
-          // final String userId=userData['id'].toString();
-          final bool? isInitialPassword = userData['is_initial_password'];
+          bool? isInitialPassword = userData['is_initial_password'];
 
           if (storedRole == widget.role) {
             if(isInitialPassword == true){
@@ -165,26 +170,22 @@ class _LoginState extends State<Login> {
                 barrierDismissible: false,
                 builder: (BuildContext context) {
                   return AlertDialog(
-                    title: Text('تنبيه هام'),
-                    content: Text('كلمة المرور الحالية هي كلمة مرور ابتدائية. يرجى تغييرها الآن لحماية حسابك.'),
+                    title: const Text('تنبيه هام'),
+                    content: const Text('كلمة المرور الحالية هي كلمة مرور ابتدائية. يرجى تغييرها الآن لحماية حسابك.'),
                     actions: <Widget>[
                       TextButton(
-                        child: Text('لاحقًا'),
+                        child: const Text('لاحقًا'),
                         onPressed: () {
                           Navigator.of(context).pop(true);
                         },
                       ),
                       TextButton(
-                        child: Text('تغيير الآن'),
+                        child: const Text('تغيير الآن'),
                         onPressed: () async {
                           showSnackBar(context, 'تم إرسال رابط إعادة تعيين كلمة المرور إلى بريدك الإلكتروني.');
-                          Navigator.of(context).pop(false); // إغلاق مربع الحوار
+                          isInitialPassword=false;
+                          Navigator.of(context).pop(false);
                           await _sendPasswordResetEmail(user.email!, context);
-                          // لا نعتبر تسجيل الدخول ناجحًا هنا حتى يتم تغيير كلمة المرور فعليًا
-                          // يمكنك عرض رسالة للمستخدم بأنه تم إرسال رابط إعادة التعيين
-
-                          // قد تحتاج إلى إبقاء المستخدم على شاشة تسجيل الدخول أو توجيهه إلى شاشة انتظار
-
                         },
                       ),
                     ],
@@ -192,13 +193,11 @@ class _LoginState extends State<Login> {
                 },
               );
 
-              await _updateFirestoreOnLogin(user.uid, false);
+              await _updateFirestoreOnLogin(user.uid, isInitialPassword!);
 
               return shouldNavigate ?? false;
             }
             else {
-              // كلمة المرور ليست ابتدائية، نقوم بتحديثها في Firestore
-              // final encryptedPassword = _encryptPassword(password!); // مثال لتشفير كلمة المرور
               print('تسجيل الدخول ناجح بدور: ${widget.role}');
               return true;
             }
@@ -208,11 +207,11 @@ class _LoginState extends State<Login> {
               context: context,
               builder: (BuildContext context) {
                 return AlertDialog(
-                  title: Text('تنبيه'),
+                  title: const Text('تنبيه'),
                   content: Text('يبدو أن دورك المسجل هو "${widget.role}". يرجى اختيار نوع "$storedRole" لتسجيل الدخول.'),
                   actions: <Widget>[
                     TextButton(
-                      child: Text('موافق'),
+                      child: const Text('موافق'),
                       onPressed: () {
                         Navigator.of(context).pop();
                       },
@@ -229,11 +228,11 @@ class _LoginState extends State<Login> {
             context: context,
             builder: (BuildContext context) {
               return AlertDialog(
-                title: Text('خطأ'),
-                content: Text('لا يوجد بيانات حساب مرتبطة بهذا المستخدم في التطبيق.'),
+                title: const Text('خطأ'),
+                content: const Text('لا يوجد بيانات حساب مرتبطة بهذا المستخدم في التطبيق.'),
                 actions: <Widget>[
                   TextButton(
-                    child: Text('موافق'),
+                    child: const Text('موافق'),
                     onPressed: () {
                       Navigator.of(context).pop();
                     },
@@ -247,7 +246,6 @@ class _LoginState extends State<Login> {
       }
       return false;
     } on FirebaseAuthException catch (e) {
-      // خطأ في تسجيل الدخول (كلمة السر أو البريد الإلكتروني غير صحيح)
       String errorMessage = 'حدث خطأ أثناء تسجيل الدخول.';
       if (e.code == 'user-not-found') {
         errorMessage = 'لا يوجد مستخدم بهذا البريد الإلكتروني.';
@@ -258,11 +256,11 @@ class _LoginState extends State<Login> {
         context: context,
         builder: (BuildContext context) {
           return AlertDialog(
-            title: Text('خطأ في تسجيل الدخول'),
+            title: const Text('خطأ في تسجيل الدخول'),
             content: Text(errorMessage),
             actions: <Widget>[
               TextButton(
-                child: Text('موافق'),
+                child:const Text('موافق'),
                 onPressed: () {
                   Navigator.of(context).pop();
                 },
@@ -279,11 +277,11 @@ class _LoginState extends State<Login> {
         context: context,
         builder: (BuildContext context) {
           return AlertDialog(
-            title: Text('خطأ'),
-            content: Text('حدث خطأ غير متوقع. يرجى المحاولة مرة أخرى.'),
+            title: const Text('خطأ'),
+            content: const Text('حدث خطأ غير متوقع. يرجى المحاولة مرة أخرى.'),
             actions: <Widget>[
               TextButton(
-                child: Text('موافق'),
+                child: const Text('موافق'),
                 onPressed: () {
                   Navigator.of(context).pop();
                 },
@@ -299,8 +297,7 @@ class _LoginState extends State<Login> {
   Future<void> _sendPasswordResetEmail(String email, BuildContext context) async {
     try {
       await FirebaseAuth.instance.sendPasswordResetEmail(email: email);
-      // يمكنك هنا عرض رسالة نجاح للمستخدم
-      showSnackBar(context, 'تم إرسال رابط إعادة تعيين كلمة المرور إلى بريدك الإلكتروني. يرجى التحقق من بريدك الوارد (أو مجلد الرسائل غير المرغوب فيها).');
+      showSnackBar(context, 'تم إرسال رابط إعادة تعيين كلمة المرور إلى بريدك الإلكتروني.');
     } on FirebaseAuthException catch (e) {
       String errorMessage = 'حدث خطأ أثناء إرسال رابط إعادة تعيين كلمة المرور.';
       if (e.code == 'invalid-email') {
@@ -314,6 +311,50 @@ class _LoginState extends State<Login> {
     }
   }
 
+  void _showForgetPasswordDialog(BuildContext context) {
+    final TextEditingController forgetPasswordEmailController = TextEditingController();
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('إعادة تعيين كلمة المرور'),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: <Widget>[
+              const Text('أدخل بريدك الإلكتروني لإرسال رابط إعادة تعيين كلمة المرور.'),
+              const SizedBox(height: 10),
+              TextField(
+                controller: forgetPasswordEmailController,
+                keyboardType: TextInputType.emailAddress,
+                decoration: const InputDecoration(labelText: 'البريد الإلكتروني'),
+              ),
+            ],
+          ),
+          actions: <Widget>[
+            TextButton(
+              child: const Text('إلغاء'),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+            TextButton(
+              child: const Text('إرسال'),
+              onPressed: () {
+                if (forgetPasswordEmailController.text.trim().isNotEmpty) {
+                  _sendPasswordResetEmail(forgetPasswordEmailController.text.trim(), context);
+                  Navigator.of(context).pop(); // إغلاق مربع الحوار بعد الإرسال
+                } else {
+                  showSnackBar(context, 'يرجى إدخال بريدك الإلكتروني.');
+                }
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+
   Future<void> _updateFirestoreOnLogin(String uid, bool isInitialPassword) async {
     try {
       await FirebaseFirestore.instance.collection('users').doc(uid).update({
@@ -324,6 +365,8 @@ class _LoginState extends State<Login> {
       // يمكنك هنا إضافة معالجة للخطأ إذا لزم الأمر (مثل عرض رسالة للمستخدم)
     }
   }
+
+
 
   Future<void> navigateBasedOnRole(BuildContext context) async{
     User? user=FirebaseAuth.instance.currentUser;
@@ -342,11 +385,8 @@ class _LoginState extends State<Login> {
             .doc(user.uid)
             .update(updateData);
 
-        var userData = userDoc.data() as Map<String, dynamic>; // تحقق من نوع البيانات
+        var userData = userDoc.data() as Map<String, dynamic>;
 
-        // Future.delayed(const Duration(seconds: 1), () async {
-        //   sendNotification(title: "Test Title", body: "Test Body", fcmToken: userData["fcm_token"]??"" , userID: userDoc.id);
-        // });
 
 
         String role = userData['role'];
@@ -357,7 +397,7 @@ class _LoginState extends State<Login> {
         } else if (role == 'assistant') {
           Navigator.pushReplacementNamed(context, HomePageAssistant.id);
         } else {
-          Navigator.pushReplacementNamed(context, HomePageStudent.id); // صفحة افتراضية إذا لم يتم العثور على الدور
+          Navigator.pushReplacementNamed(context, HomePageStudent.id);
         }
       }
     }
