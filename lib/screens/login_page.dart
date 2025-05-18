@@ -40,7 +40,7 @@ class _LoginState extends State<Login> {
       inAsyncCall: isLoding,
       child: Scaffold(
         appBar: AppBar(
-          title: const Text('Login'),
+          title: const Text('Login',style: TextStyle(color:Colors.white,),),
         ),
         // backgroundColor:kPrimaryColor,
         body:Padding(

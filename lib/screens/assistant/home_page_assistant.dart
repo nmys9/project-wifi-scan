@@ -46,11 +46,11 @@ class _HomePageAssistantState extends State<HomePageAssistant> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(_selectedIndex == 0 ? 'Assistant Home' : "Assistant Notifications"),
+        title: Text(_selectedIndex == 0 ? 'Assistant Home' : "Assistant Notifications",style: TextStyle(color: Colors.white),),
         actions: [
           IconButton(
             onPressed: ()=> logout(context),
-            icon: const Icon(Icons.logout),
+            icon: const Icon(Icons.logout,color: Colors.white,),
             tooltip: 'Logout',
           ),
         ],

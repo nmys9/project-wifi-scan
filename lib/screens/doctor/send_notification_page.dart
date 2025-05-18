@@ -90,7 +90,7 @@ class _SendNotificationPageState extends State<SendNotificationPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text("Send Notification")),
+      appBar: AppBar(title: const Text("Send Notification",style: TextStyle(color: Colors.white))),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16.0),
         child: Column(

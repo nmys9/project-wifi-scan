@@ -76,11 +76,11 @@ class _HomePageStudentState extends State<HomePageStudent> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(_selectedIndex == 0 ? 'Home Page Student' : "Student Notifications"),
+        title: Text(_selectedIndex == 0 ? 'Home Page Student' : "Student Notifications",style: const TextStyle(color: Colors.white,),),
         actions: [
           IconButton(
               onPressed: ()=> logout(context),
-              icon: const Icon(Icons.logout),
+              icon: const Icon(Icons.logout,color: Colors.white,),
             tooltip: 'Logout',
           ),
         ],

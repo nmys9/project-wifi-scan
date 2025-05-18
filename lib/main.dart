@@ -1,12 +1,10 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
-import 'package:project_wifi_scan/screens/access_denied_page.dart';
 import 'firebase_options.dart';
 import 'scan_wifi.dart';
 import 'screens/assistant/home_page_assistant.dart';
 import 'screens/doctor/home_page_doctor.dart';
 import 'screens/login_page.dart';
-import 'screens/register_user.dart';
 import 'screens/student/home_page_student.dart';
 import 'screens/user_type_page.dart';
 
@@ -36,14 +34,9 @@ class MyApp extends StatelessWidget {
       routes: {
         UserType.id:(context)=> const UserType(),
         Login.id :(context)=> const Login(),
-        RegisterUser.id :(context)=> const RegisterUser(),
         HomePageStudent.id :(context) => HomePageStudent(),
         HomePageDoctor.id :(context) => const HomePageDoctor(),
         HomePageAssistant.id :(context) => HomePageAssistant(),
-        // ShowAllDoctor.id :(context) => ShowAllDoctor(),
-        AccessDeniedPage.id: (context) => const AccessDeniedPage(),
-
-
       },
     );
   }

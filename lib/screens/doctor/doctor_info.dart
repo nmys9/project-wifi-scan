@@ -315,7 +315,7 @@ class _DoctorInfoState extends State<DoctorInfo> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Doctor Info'),
+        title: const Text('Doctor Info',style: TextStyle(color: Colors.white)),
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
